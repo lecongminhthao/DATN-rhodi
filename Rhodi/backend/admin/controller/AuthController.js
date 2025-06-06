@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
         role: employee.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      // { expiresIn: "1h" }
     );
 
     res.json({

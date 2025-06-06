@@ -3,33 +3,34 @@ const Product = require("../model/ProductModel");
 // tạo sản phẩm
 exports.createProduct = async (req, res) => {
   try {
-    const { name, price, description, category, image } = req.body;
-    const existingProduct = await checkProductExists(name);
+    const { name, status, importPrice, salePrice } = req.body;
+
+    const existingProduct = await checkProductNameExist(name);
     if (existingProduct) {
-      return res.status(400).json({ message: "Sản phẩm đã tồn tại" });
+      return res.status(400).json({ message: "Tên sản phẩm đã tồn tại." });
     }
+
     const productCode = await generateProductCode();
     const discountPrice = 0;
+
     const newProduct = new Product({
       name,
-      price,
-      description,
-      category,
-      image,
-      productCode,
+      code: productCode,
+      status: status || 1,
+      importPrice,
+      salePrice,
       discountPrice,
     });
+
     await newProduct.save();
-    res.status(201).json({
-      message: "Sản phẩm đã được tạo thành công",
-      product: newProduct,
-    });
+    res.status(201).json(newProduct);
   } catch (error) {
-    res.status(500).json({
-      message: "tạo thất bại",
-    });
+    console.error("Lỗi tạo sản phẩm:", error);
+    res.status(500).json({ message: "Không thể tạo sản phẩm.", error: error.message });
   }
 };
+
+
 
 // cập nhật sản phẩm 
 exports.updateProduct = async (req, res) => {
@@ -37,11 +38,11 @@ exports.updateProduct = async (req, res) => {
     const { id } = req.params;
     const { name, status, importPrice, salePrice, discountPrice } = req.body;
 
-    const existingProduct = await checkProdcutNameExists(name);
-    if (existingProduct && existingProduct._id.toString() !== id) {
-      return res.status(400).json({ message: "Tên sản phẩm đã tồn tại" });
+   const existingProduct = await checkProductNameExist(name);
+    if (existingProduct) {
+      return res.status(400).json({ message: "Tên sản phẩm đã tồn tại." });
     }
-    const updatProduct = await Product.finbdByIdAndUpdate(
+    const updatProduct = await Product.findByIdAndUpdate(
       id,
       {
         name,
@@ -57,8 +58,9 @@ exports.updateProduct = async (req, res) => {
     }
     res.status(200).json(updatProduct);
   } catch (error) {
+     console.error("Lỗi tạo sản phẩm:", error);
     res.status(500).json({
-      message: "Cập nhật sản phẩm thất bại",
+      message: "Cập nhật sản phẩm thất bại", error: error.message
     });
   }
 };
@@ -74,7 +76,7 @@ exports.deleteProduct = async (req, res) => {
     res.status(200).json({ message: "Sản phẩm đã được xóa thành công" });
   } catch (error) {
     res.status(500).json({
-      message: "Xóa sản phẩm thất bại",
+      message: "Xóa sản phẩm thất bại", error: error.message
     });
   }
 };
@@ -89,7 +91,7 @@ exports.getProductById = async (req, res) => {
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({
-      message: "Lấy sản phẩm thất bại",
+      message: "Lấy sản phẩm thất bại", error: error.message
     });
   }
 };
@@ -104,7 +106,7 @@ exports.getProductsBystatus = async(req,res)=>{
     res.status(200).json(products)
   }catch(error){
     res.status(500).json({
-      message: "không thể lấy danh sách sản phẩm theo status"
+      message: "không thể lấy danh sách sản phẩm theo status", error: error.message
     });
   }
 }
@@ -114,8 +116,8 @@ exports.getAllProducts = async(req,res)=>{
     const {page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
 
-    const products = await Products.find().skip(skip).limit(Number(limit)).exec();
-    const totalProducts = await Products.countDocuments();
+    const products = await Product.find().skip(skip).limit(Number(limit)).exec();
+    const totalProducts = await Product.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit);
 
     res.json({
@@ -125,28 +127,26 @@ exports.getAllProducts = async(req,res)=>{
     });
   } catch (error) {
     res.status(500).json({
-      message : " không thể lấy sản phẩm"
+      message : " không thể lấy sản phẩm", error: error.message
     })
   }
 }
 
 // kiểm tra sản phẩm có tồn tại hay không ?
-const checkProdcutNameExists = async(name) => 
-  {
-  const product = await Product.findone({
-    name : {$regex: new Regexp("^"+ name + "$", "i")},
+const checkProductNameExist = async (name) => {
+  const product = await Product.findOne({
+    name: { $regex: new RegExp("^" + name + "$", "i") },
   });
   return product;
-}
-// tao mã sản phẩm tự động của barcode
-const generateProductCode = async () =>{
-  const lastProduct = await Product.findone().sort({
-    code: -1}).exec();
-    if(!lastproduct) return "P001";
+};
+
+const generateProductCode = async () => {
+  const lastProduct = await Product.findOne().sort({ code: -1 }).exec();
+  if (!lastProduct) return "P001";
 
   const lastCode = lastProduct.code;
-  const lastNumber = parseInt(lastCode.reqlace("P",""));
-
+  const lastNumber = parseInt(lastCode.replace("P", ""));
   const newNumber = lastNumber + 1;
-  return `P${newNumber.toString().padStart(3,"0")}`;
-}
+
+  return `P${newNumber.toString().padStart(3, "0")}`;
+};

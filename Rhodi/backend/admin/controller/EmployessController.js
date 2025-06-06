@@ -19,17 +19,26 @@ const isDobValid = (dob) => {
 
 const generateEmployeeId = async () => {
   const lastEmployee = await Employee.findOne().sort({ employeeId: -1 });
+
   if (!lastEmployee) {
     return "nv01";
   }
 
   const lastEmployeeId = lastEmployee.employeeId;
-  const lastNumber = parseInt(lastEmployeeId.substring(2));
+
+  // Lấy phần số từ chuỗi, đảm bảo là số hợp lệ
+  const lastNumber = parseInt(lastEmployeeId.replace(/[^\d]/g, ""), 10);
+
+  if (isNaN(lastNumber)) {
+    return "nv01"; // fallback nếu gặp lỗi
+  }
+
   const newNumber = lastNumber + 1;
 
   const newEmployeeId = "nv" + newNumber.toString().padStart(2, "0");
   return newEmployeeId;
 };
+
 
 const isFieldExist = async (field, value) => {
   const exists = await Employee.findOne({ [field]: value });

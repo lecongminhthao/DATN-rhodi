@@ -7,11 +7,7 @@ const ProductDetailSchema = new Schema(
     color: { type: Schema.Types.ObjectId, ref: "Color", required: true },
     size: { type: Schema.Types.ObjectId, ref: "Size", required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
-    producttype: {
-      type: Schema.Types.ObjectId,
-      ref: "ProductType",
-      required: true,
-    },
+    producttype: { type: Schema.Types.ObjectId, ref: 'ProductType', required: true },
     quantity: { type: Number, required: true },
     barcode: { type: String, required: true, unique: true },
     status: { type: Number, default: 1 },

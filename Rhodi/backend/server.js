@@ -6,8 +6,13 @@ const mongoose = require("mongoose");
 const authRoutes = require("./admin/routers/Auth");
 const ColorRouter = require("./admin/routers/ColorRouter");
 const authMiddleware = require("./admin/middleware/authMiddleware");
+const ProductDetailRouter = require("./admin/routers/ProductDetailRouter");
 const employeeRoutes = require("./admin/routers/EmployessRouter");
-const ProductRouter = require("./admin/routers/ProductRouter")
+const ProductRouter = require("./admin/routers/ProductRouter");
+const CategoryRouter = require("./admin/routers/CategoryRouter");
+const SizeRouter = require("./admin/routers/SizeRouter");
+const ImageRouter = require("./admin/routers/ImageRouter");
+const ProductTypeRouter = require("./admin/routers/ProductTypeRouter");
 
 dotenv.config();
 
@@ -32,6 +37,15 @@ app.use("/admin", authMiddleware(["Admin"]), ColorRouter);
 app.use("/admin", authMiddleware(["Admin"]), ProductRouter);
 
 app.use("/admin", authMiddleware(["Admin"]), employeeRoutes);
+
+app.use("/admin", authMiddleware(["Admin"]), ProductDetailRouter);
+app.use("/admin", authMiddleware(["Admin"]), CategoryRouter);
+
+app.use("/admin", authMiddleware(["Admin"]), SizeRouter);
+
+app.use("/admin", authMiddleware(["Admin"]), ImageRouter);
+
+app.use("/admin", authMiddleware(["Admin"]),ProductTypeRouter);
 mongoose
   .connect("mongodb://127.0.0.1:27017/rhodi-datn")
   .then(() => console.log(" kết nối thành công!"))
