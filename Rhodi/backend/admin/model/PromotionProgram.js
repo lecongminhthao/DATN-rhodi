@@ -1,12 +1,12 @@
 // models/PromotionProgram.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PromotionProgramSchema = new Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
+    unique: true,  // Đảm bảo mỗi mã voucher là duy nhất
   },
   name: {
     type: String,
@@ -14,20 +14,20 @@ const PromotionProgramSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["product_discount", "invoice_discount"],
+    enum: ['product_discount', 'invoice_discount'], // 'product_discount' hoặc 'invoice_discount'
     required: true,
   },
   discountValue: {
     type: Number,
-    required: true,
+    required: true, // Nếu là 'product_discount' thì là tiền giảm, còn 'invoice_discount' là phần trăm giảm
   },
   minInvoiceValue: {
     type: Number,
-    default: 0,
+    default: 0, // Điều kiện áp dụng: hóa đơn phải >= giá trị này
   },
   maxDiscountAmount: {
     type: Number,
-    default: null,
+    default: null, // Mức giảm tối đa (áp dụng với invoice_discount)
   },
   startDate: {
     type: Date,
@@ -39,13 +39,13 @@ const PromotionProgramSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "active", "expired"],
-    default: "pending",
+    enum: ['pending', 'active', 'expired'], // 3 trạng thái rõ ràng
+    default: 'pending',
   },
   description: {
     type: String,
-    default: "",
+    default: '', // Mô tả chi tiết về chương trình
   },
 });
 
-module.exports = mongoose.model("PromotionProgram", PromotionProgramSchema);
+module.exports = mongoose.model('PromotionProgram', PromotionProgramSchema);

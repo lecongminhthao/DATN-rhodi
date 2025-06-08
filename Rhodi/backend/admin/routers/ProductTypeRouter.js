@@ -1,17 +1,25 @@
-const express = require('express');
+// routes/productTypeRoutes.js
+const express = require("express");
 const router = express.Router();
-const productTypeController = require('../controller/ProductTypeController');
+const productTypeController = require("../controller/ProductTypeController");
 
-router.post('/ProductType', productTypeController.createProductType);
+// Route để tạo loại sản phẩm
+router.post("/ProductType", productTypeController.createProductType);
 
-router.get('/ProductTypes', productTypeController.getProductTypes);
+// Route để lấy tất cả loại sản phẩm
+router.get("/ProductTypes", productTypeController.getProductTypes);
 
-router.get('/ProductType/:id', productTypeController.getProductTypeById);
+router.get("/ProductType/:id", productTypeController.getProductTypeById);
 
-router.put('/ProductType/:id', productTypeController.updateProductType);
+// Route để cập nhật loại sản phẩm
+router.put("/ProductType/:id", productTypeController.updateProductType);
 
-router.delete('/ProductType/:id', productTypeController.deleteProductType);
+// Route để xóa loại sản phẩm
+router.delete("/ProductType/:id", productTypeController.deleteProductType);
 
-router.get('/ProductType/category/:id', productTypeController.getProductTypesByCategory);
+router.get(
+  "/ProductType/category/:id",
+  productTypeController.getProductTypesByCategory
+);
 
 module.exports = router;

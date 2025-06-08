@@ -19,6 +19,7 @@ const authMiddleware = (roles = []) => {
           .status(403)
           .json({ message: "Forbidden: Insufficient role" });
       }
+
       next();
     } catch (err) {
       return res.status(401).json({ message: "Invalid token" });

@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+// models/Customer.js
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const customerSchema = new mongoose.Schema({
-  username: { type: String, unique: true, required: true },
+  username: { type: String, unique: true, required: true }, // Có thể dùng email cũng được
   password: { type: String, required: true },
 
   name: { type: String },
@@ -13,8 +14,9 @@ const customerSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-customerSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// Mã hóa mật khẩu trước khi lưu
+customerSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -25,8 +27,9 @@ customerSchema.pre("save", async function (next) {
   }
 });
 
+// So sánh mật khẩu khi login
 customerSchema.methods.comparePassword = async function (inputPassword) {
   return await bcrypt.compare(inputPassword, this.password);
 };
 
-module.exports = mongoose.model("Customer", customerSchema);
+module.exports = mongoose.model('Customer', customerSchema);

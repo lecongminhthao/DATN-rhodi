@@ -89,25 +89,29 @@ exports.getProductDetailList = async (req, res) => {
   try {
     let { page, limit } = req.query;
 
-
+    // Nếu page hoặc limit không được cung cấp, mặc định là trang 1 và giới hạn 5 sản phẩm mỗi trang
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 5;
     const skip = (page - 1) * limit;
 
-    console.log(`Page: ${page}, Limit: ${limit}, Skip: ${skip}`); 
+    console.log(`Page: ${page}, Limit: ${limit}, Skip: ${skip}`); // Log thông tin phân trang
 
+    // Lấy danh sách chi tiết sản phẩm với phân trang và populate các dữ liệu liên quan
     const productDetails = await ProductDetail.find()
       .skip(skip)
       .limit(limit)
-      .populate('product') 
-      .populate('category') 
-      .populate('producttype')
-      .populate('color') 
-      .populate('size'); 
+      .populate("product") // Populate thông tin sản phẩm (tên sản phẩm, giá...)
+      .populate("category") // Populate thông tin danh mục sản phẩm
+      .populate("producttype") // Populate loại sản phẩm
+      .populate("color") // Populate màu sắc sản phẩm
+      .populate("size"); // Populate kích cỡ sản phẩm
 
+    // Lấy tổng số chi tiết sản phẩm
     const totalProductDetails = await ProductDetail.countDocuments();
 
-    console.log(`Total Product Details: ${totalProductDetails}`);
+    console.log(`Total Product Details: ${totalProductDetails}`); // Log tổng số chi tiết sản phẩm
+
+    // Trả về kết quả
     res.status(200).json({
       productDetails,
       pagination: {
@@ -119,7 +123,7 @@ exports.getProductDetailList = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Có lỗi xảy ra' });
+    res.status(500).json({ error: "Có lỗi xảy ra" });
   }
 };
 exports.getProductDetailById = async (req, res) => {
